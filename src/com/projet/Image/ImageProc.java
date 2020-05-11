@@ -1,6 +1,6 @@
-package com.projet.imageProc;
+package com.imageLibs.Image;
 
-import com.projet.math.Histogramme;
+import com.imageLibs.math.Histogramme;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -23,15 +23,7 @@ import java.util.Arrays;
  */
 public class ImageProc {
 
-
-    public static BufferedImage erosion (BufferedImage bf , int [][] noyau) {
-
-        BufferedImage bc = new BufferedImage(bf.getWidth(),bf.getHeight() , BufferedImage.TYPE_INT_RGB); // UN nouveau bufferedImage
-
-
-        return bc;
-    }
-    public static BufferedImage filtreMadian(BufferedImage bf) {
+    public static BufferedImage filtreMadian(BufferedImage bf  ) {
 
         BufferedImage untouched = bf;
         BufferedImage modifier = new BufferedImage(bf.getWidth() , bf.getHeight() , BufferedImage.TYPE_INT_RGB);
@@ -68,7 +60,6 @@ public class ImageProc {
 
         return modifier;
     }
-
     public static int getValeurMax (BufferedImage histProj) {
 
         int valeurMax = 0;
@@ -103,19 +94,22 @@ public class ImageProc {
 
         return valeurMax;
     }
-
     /**
      * Le principe est qu'on compte le nombre de blanc , et qu'on fasse une moyenne de largeur d'une marche pour povoir retirer les pic qui servent a rien
      *
      * @param histProj
      * @return
      */
-    public static int compterMarche (BufferedImage histProj) {
-
-
-        int quart = (histProj.getWidth() /4);
+    public static int compterMarche (BufferedImage histProj , int quart) {
+        //(histProj.getWidth() /2);
         int couleur = ImageProc.getGris(histProj , quart ,0);
         int compteur = 0;
+
+        boolean cont = true;
+
+        if (quart == histProj.getWidth()/2) {
+            cont = false;
+        }
 
         for (int y = 0 ; y <histProj.getHeight() ; y ++) {
 
@@ -129,77 +123,13 @@ public class ImageProc {
 
         compteur /=2;
 
-        System.out.println(compteur);
-
-        return compteur;
-
-        /*int quart = histProj.getWidth()/4 - 10; //ImageProc.getValeurMax(histProj);
-        int compteurBlanc = 0;
-        boolean hasToPush = false;
-
-        ArrayList <Integer> largeurs = new ArrayList<Integer>();
-
-        for (int y = 0 ; y <histProj.getHeight() ; y ++) {
-
-            if (ImageProc.getGris(histProj, quart , y) == 255) {// S'il est blanc
-
-                if (hasToPush){
-                    hasToPush = false;
-                    largeurs.add(compteurBlanc);
-                    compteurBlanc = 0;
-
-                    for (int i = 0 ; i < histProj.getWidth() ; i ++) {
-                        ImageProc.setGreyIntensity(histProj , i , y , 255);
-                    }
-                }
-            }else{// S'il est noir
-
-                hasToPush = true;
-                ImageProc.setGreyIntensity(histProj, quart ,y , 255);
-                compteurBlanc ++;
-            }
-        }
-        double moyenne = 0;
-        for (int i = 0 ; i < largeurs.size() ; i++) {
-
-            System.out.println("Voici les largeurs   ---->    "+largeurs.get(i));
-            moyenne+=largeurs.get(i);
+        if (compteur == 0  && cont) {
+            return ImageProc.compterMarche(histProj , histProj.getWidth()/2);
         }
 
-        moyenne/=largeurs.size();
+        System.out.println(compteur -1);
 
-        System.out.println("Voici la mpyenne des largeurs : "+moyenne);
-        System.out.println("Voici le nombre de marche : -----> "+largeurs.size());
-
-
-         */
-    }
-
-    public static int comptrMarche (BufferedImage histProj , int largeurMarche) {
-
-        int nombreMarche = 0;
-        int largeur = 0;
-        int quart = histProj.getWidth()/4;
-
-        int couleur = ImageProc.getGris(histProj , quart , 0);
-
-        for (int y = 0 ; y <histProj.getHeight() ; y ++) {
-
-            largeur ++;
-
-            if (ImageProc.getGris(histProj , quart , y) != couleur && largeur> largeurMarche) {
-
-                nombreMarche ++;
-                couleur = ImageProc.getGris(histProj , quart , y);
-                largeur = 0;
-            }
-        }
-
-        nombreMarche /=2; // On divise pas deux le nombre de marche
-
-        System.out.println("Voici le nmbre de marche  ==========>>>>>> "+ nombreMarche);
-
-        return nombreMarche;
+        return compteur-1;
     }
 
     public static BufferedImage histogrammeProjeter (BufferedImage bf) {
@@ -219,40 +149,26 @@ public class ImageProc {
             newY ++;
 
             for (int x = 0 ; x < xMax ; x ++) {
-
-                if (ImageProc.getGris(bf , x , y) == 0) {
+                if (ImageProc.getGris(bf , x , y) == 255) {
                     ImageProc.setGreyIntensity(newBuff,newX,newY,255);
                     newX ++;
                 }
-
             }
-
             tab[newY] = newX;
 
         }
 
-
-        for (int i = 0 ; i <tab.length ; i ++) {
-
-            System.out.println("CouCOU -------->  " + tab[i]);
-        }
-
-        //ImageProc.compterMarche(newBuff);
-
         return newBuff;
     }
-
     public static BufferedImage chargerImage( String path) throws IOException {
 
         return ImageIO.read(new File (path));
     }
-
-    private static void setGreyIntensity (BufferedImage bf , int x , int y , int intensity) {
+    public static void setGreyIntensity (BufferedImage bf , int x , int y , int intensity) {
 
         int [] intens = { intensity , intensity , intensity , 255 };
         bf.getRaster().setPixel(x,y,intens);
     }
-
     public static BufferedImage egalise (BufferedImage bf) {
 
         BufferedImage bn = bf;
@@ -273,35 +189,29 @@ public class ImageProc {
 
         return bf;
     }
-
     public static BufferedImage etirer (BufferedImage bf) {
-
-        BufferedImage bn = bf;
 
         int [] hist = Histogramme.calculHistogramme(bf); // on calcule l'histogramme et on l'étire
         int lmax = Histogramme.getMaxIntensity(hist); // On récupère 'intensité maximal
         int lmin = Histogramme.getMinIntensity(hist); // ON récupère l'intensité minimal
         int intensity;
 
-        for (int y = 0 ; y < bn.getHeight() ;  y ++) {
+        for (int y = 0 ; y < bf.getHeight() ;  y ++) {
+            for (int x = 0 ; x < bf.getWidth() ; x ++) {
 
-            for (int x = 0 ; x < bn.getWidth() ; x ++) {
-
-                intensity = (int) (256/(lmax-lmin))*(ImageProc.getGris(bn , x , y) - lmin);
+                intensity = (int) (256/(lmax-lmin))*(ImageProc.getGris(bf , x , y) - lmin);
                 System.out.println("voici la nouvelle intensité : "+intensity);
                 setGreyIntensity(bf,x,y,intensity);
             }
         }
 
-        return bn;
+        return bf;
     }
-
     public static BufferedImage otsuSeuillage (BufferedImage bf) {
 
         Otsu otsu = new Otsu ();
 
         int hist [] = Histogramme.calculHistogramme(bf);
-
         int normalise [] = Histogramme.normalise(hist);
         ImageProc.etirer(bf);
 
@@ -312,6 +222,7 @@ public class ImageProc {
         }
 
         int seuil = (int) otsu.getOtsuThreshold(normalise);
+
         seuil +=100;
         System.out.println("Voici le treshold trouvé " + seuil);
 
@@ -323,7 +234,6 @@ public class ImageProc {
         }
         return bf;
     }
-
     /**
      * Permet de transformer une image en niveau de gris en  image binaire
      *
@@ -351,7 +261,6 @@ public class ImageProc {
 
         return bi;
     }
-
     /**
      * Met en négatif l'image
      *
@@ -378,7 +287,6 @@ public class ImageProc {
 
         return img;
     }
-
     /**
      * Affiche l'histogramme d'un image en noir et blanc
      *
@@ -404,7 +312,6 @@ public class ImageProc {
         ImageProc.afficherImage(bf, "Image");
         // On affiche le resultat
     }
-
     /**
      * Affiche une image dans une fenetre à part
      *
@@ -432,8 +339,6 @@ public class ImageProc {
         frame.setVisible(true);
 
     }
-
-
     /**
      * Transforme une image en couleur en noir niveau de gris
      *
@@ -465,8 +370,6 @@ public class ImageProc {
 
         return ba;
     }
-
-
     /**
      * Récupère le niveau de gris d'un pixel
      *
@@ -484,6 +387,5 @@ public class ImageProc {
 
         return couleur;
     }
-
 
 }

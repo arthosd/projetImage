@@ -1,42 +1,33 @@
-package com.projet.Logique;
+package com.imageLibs.Logique;
 
-import com.projet.imageProc.*;
 
+import com.imageLibs.Gui.MainGui;
+import com.imageLibs.Image.ImageProc;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
-public class Main {
+
+public class Main{
 
 
     public static void main (String [] args) {
+        MainGui gui = new MainGui();
 
-        try {
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/e2.jpg");
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/sarah.jpeg");
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/comment-eclaircir-un-escalier-en-bois-4058-720-0.jpg");
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/escalier2.jpeg");
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/escalier-bois.jpg");
-            //BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/etage.jpg");
-            BufferedImage bf = ImageProc.chargerImage("/home/elie/Images/escalier/fauteuil-monte-escaliers.jpg");
-            ImageProc.greyScale(bf); // On transforme l'image en noir et blanc
-            ImageProc.afficherImage(bf , "avant");
+        /*try {
+            BufferedImage [] cthreadTable;
+            File f = new File("/home/elie/Images/escalier/Escalier-face.jpg");
+            BufferedImage bi = ImageIO.read(f);
 
-            ImageProc.otsuSeuillage(bf);
-            ImageProc.afficherImage(bf , "Seuillage d'otsu");
+            ThreadManager t = new ThreadManager(bi,4);
+            t.start(); // Ce n'est pas un
 
-            BufferedImage bc = ImageProc.filtreMadian(bf);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
-            ImageProc.afficherImage(bc , "Apres filtre median");
-
-            //ImageProc.afficherImage(ImageProc.filtreMadian(bc) , "Deuxieme filtre");
-            ImageProc.afficherImage(ImageProc.filtreMadian(ImageProc.histogrammeProjeter(bc)) , "Projeter");
-
-            ImageProc.compterMarche(bc);
-
-            //ImageProc.afficherImage(ImageProc.histogrammeProjeter(bf) , "Histogramme Projeté");
-
-        }catch (IOException e) {
-            System.out.println("ERREUR CHATGEMENT IMAGE.");
-        }
     }
+
 }

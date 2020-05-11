@@ -1,4 +1,4 @@
-package com.projet.math;
+package com.imageLibs.math;
 
 import java.awt.image.BufferedImage;
 
